@@ -131,4 +131,5 @@ if __name__ == "__main__":
     result = parser.parse(lexer.tokenize(json_text))
 
     pprint.pprint(result)
+    print(result)
     # pprint.pprint(parser.parse(lexer.tokenize(json_exampe_2)))
