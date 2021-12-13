@@ -3,24 +3,33 @@ import pprint
 
 
 class JSONLexer(Lexer):
-    tokens = {"FLOAT", "INTEGER", "STRING"}
-
+    tokens = {'{', '}', '[', ']', ',', ':',"number", "string","true","false","null"}
     literals = {'{', '}', '[', ']', ',', ':'}
-    ignore = " \t\n"
-
-    @_(r"\".*?\"")
-    def STRING(self, t):
+    ignore = " \t\n\r"
+    
+    #@_(r'".*?"')
+    @_(r'"(((?=\\)\\(["\\/bnrt]|u[0-9a-fA-F]{4}))|[^"\\\0-\x1F\x7F]+)*"')
+    def string(self, t):
         t.value = t.value.strip("\"")
         return t
 
-    @_(r"\d+\.\d*")
-    def FLOAT(self, t):
-        t.value = float(t.value)
+    @_(r'-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?')
+    def number(self, t):
+        # t.value = float(t.value)
+        # if(t.value%1==0):
+        #     t.value = int(t.value)
         return t
-
-    @_(r"\d+")
-    def INTEGER(self, t):
-        t.value = int(t.value)
+    
+    @_(r'true')
+    def true(self, t):
+        return t
+    
+    @_(r'false')
+    def false(self, t):
+        return t
+    
+    @_(r'null')
+    def null(self, t):
         return t
 
     def error(self, t):
@@ -49,7 +58,7 @@ class JSONParser(Parser):
     def members(self, p):
         return [p.pair] + p.members
 
-    @_('STRING ":" value')
+    @_('string ":" value')
     def pair(self, p):
         return p.STRING, p.value
 
@@ -65,11 +74,7 @@ class JSONParser(Parser):
     def elements(self, p):
         return [p.value] + p.elements
 
-    @_('STRING',
-       'INTEGER',
-       'FLOAT',
-       'object',
-       'array')
+    @_('string','number', 'object', 'array', 'true', 'false', 'null')
     def value(self, p):
         return p[0]
 
