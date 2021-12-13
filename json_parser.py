@@ -6,9 +6,9 @@ class JSONLexer(Lexer):
     tokens = {'{', '}', '[', ']', ',', ':',"number", "string","true","false","null"}
     literals = {'{', '}', '[', ']', ',', ':'}
     ignore = " \t\n\r"
-    
-    #@_(r'".*?"')
-    @_(r'"(((?=\\)\\(["\\/bnrt]|u[0-9a-fA-F]{4}))|[^"\\\0-\x1F\x7F]+)*"')
+
+    @_(r'".*?"')
+    # @_(r'"(((?=\\)\\(["\\/bnrt]|u[0-9a-fA-F]{4}))|[^"\\\0-\x1F\x7F]+)*"')
     def string(self, t):
         t.value = t.value.strip("\"")
         return t
@@ -40,6 +40,7 @@ class JSONLexer(Lexer):
 class JSONParser(Parser):
     tokens = JSONLexer.tokens
     start = "json"
+    debugfile = "a.out"
 
     @_('object',
        'array')
@@ -60,7 +61,7 @@ class JSONParser(Parser):
 
     @_('string ":" value')
     def pair(self, p):
-        return p.STRING, p.value
+        return p.string, p.value
 
     @_('"[" elements "]"')
     def array(self, p):
@@ -129,5 +130,5 @@ if __name__ == "__main__":
 
     result = parser.parse(lexer.tokenize(json_text))
 
-    # pprint.pprint(result)
+    pprint.pprint(result)
     # pprint.pprint(parser.parse(lexer.tokenize(json_exampe_2)))

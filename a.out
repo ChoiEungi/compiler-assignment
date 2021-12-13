@@ -1,0 +1,302 @@
+Grammar:
+
+Rule 0     S' -> json
+Rule 1     json -> array
+Rule 2     json -> object
+Rule 3     object -> { members }
+Rule 4     members -> pair , members
+Rule 5     members -> pair
+Rule 6     pair -> string : value
+Rule 7     array -> [ elements ]
+Rule 8     elements -> value , elements
+Rule 9     elements -> value
+Rule 10    value -> null
+Rule 11    value -> false
+Rule 12    value -> true
+Rule 13    value -> array
+Rule 14    value -> object
+Rule 15    value -> number
+Rule 16    value -> string
+
+Terminals, with rules where they appear:
+
+,                    : 4 8
+:                    : 6
+[                    : 7
+]                    : 7
+error                : 
+false                : 11
+null                 : 10
+number               : 15
+string               : 6 16
+true                 : 12
+{                    : 3
+}                    : 3
+
+Nonterminals, with rules where they appear:
+
+array                : 1 13
+elements             : 7 8
+json                 : 0
+members              : 3 4
+object               : 2 14
+pair                 : 4 5
+value                : 6 8 9
+
+
+state 0
+
+    (0) S' -> . json
+    (1) json -> . array
+    (2) json -> . object
+    (7) array -> . [ elements ]
+    (3) object -> . { members }
+    [               shift and go to state 4
+    {               shift and go to state 5
+
+    json                           shift and go to state 1
+    array                          shift and go to state 2
+    object                         shift and go to state 3
+
+state 1
+
+    (0) S' -> json .
+
+
+state 2
+
+    (1) json -> array .
+    $end            reduce using rule 1 (json -> array .)
+
+
+state 3
+
+    (2) json -> object .
+    $end            reduce using rule 2 (json -> object .)
+
+
+state 4
+
+    (7) array -> [ . elements ]
+    (8) elements -> . value , elements
+    (9) elements -> . value
+    (10) value -> . null
+    (11) value -> . false
+    (12) value -> . true
+    (13) value -> . array
+    (14) value -> . object
+    (15) value -> . number
+    (16) value -> . string
+    (7) array -> . [ elements ]
+    (3) object -> . { members }
+    null            shift and go to state 8
+    false           shift and go to state 9
+    true            shift and go to state 10
+    number          shift and go to state 13
+    string          shift and go to state 14
+    [               shift and go to state 4
+    {               shift and go to state 5
+
+    elements                       shift and go to state 6
+    value                          shift and go to state 7
+    array                          shift and go to state 11
+    object                         shift and go to state 12
+
+state 5
+
+    (3) object -> { . members }
+    (4) members -> . pair , members
+    (5) members -> . pair
+    (6) pair -> . string : value
+    string          shift and go to state 17
+
+    members                        shift and go to state 15
+    pair                           shift and go to state 16
+
+state 6
+
+    (7) array -> [ elements . ]
+    ]               shift and go to state 18
+
+
+state 7
+
+    (8) elements -> value . , elements
+    (9) elements -> value .
+    ,               shift and go to state 19
+    ]               reduce using rule 9 (elements -> value .)
+
+
+state 8
+
+    (10) value -> null .
+    ,               reduce using rule 10 (value -> null .)
+    ]               reduce using rule 10 (value -> null .)
+    }               reduce using rule 10 (value -> null .)
+
+
+state 9
+
+    (11) value -> false .
+    ,               reduce using rule 11 (value -> false .)
+    ]               reduce using rule 11 (value -> false .)
+    }               reduce using rule 11 (value -> false .)
+
+
+state 10
+
+    (12) value -> true .
+    ,               reduce using rule 12 (value -> true .)
+    ]               reduce using rule 12 (value -> true .)
+    }               reduce using rule 12 (value -> true .)
+
+
+state 11
+
+    (13) value -> array .
+    ,               reduce using rule 13 (value -> array .)
+    ]               reduce using rule 13 (value -> array .)
+    }               reduce using rule 13 (value -> array .)
+
+
+state 12
+
+    (14) value -> object .
+    ,               reduce using rule 14 (value -> object .)
+    ]               reduce using rule 14 (value -> object .)
+    }               reduce using rule 14 (value -> object .)
+
+
+state 13
+
+    (15) value -> number .
+    ,               reduce using rule 15 (value -> number .)
+    ]               reduce using rule 15 (value -> number .)
+    }               reduce using rule 15 (value -> number .)
+
+
+state 14
+
+    (16) value -> string .
+    ,               reduce using rule 16 (value -> string .)
+    ]               reduce using rule 16 (value -> string .)
+    }               reduce using rule 16 (value -> string .)
+
+
+state 15
+
+    (3) object -> { members . }
+    }               shift and go to state 20
+
+
+state 16
+
+    (4) members -> pair . , members
+    (5) members -> pair .
+    ,               shift and go to state 21
+    }               reduce using rule 5 (members -> pair .)
+
+
+state 17
+
+    (6) pair -> string . : value
+    :               shift and go to state 22
+
+
+state 18
+
+    (7) array -> [ elements ] .
+    $end            reduce using rule 7 (array -> [ elements ] .)
+    ,               reduce using rule 7 (array -> [ elements ] .)
+    ]               reduce using rule 7 (array -> [ elements ] .)
+    }               reduce using rule 7 (array -> [ elements ] .)
+
+
+state 19
+
+    (8) elements -> value , . elements
+    (8) elements -> . value , elements
+    (9) elements -> . value
+    (10) value -> . null
+    (11) value -> . false
+    (12) value -> . true
+    (13) value -> . array
+    (14) value -> . object
+    (15) value -> . number
+    (16) value -> . string
+    (7) array -> . [ elements ]
+    (3) object -> . { members }
+    null            shift and go to state 8
+    false           shift and go to state 9
+    true            shift and go to state 10
+    number          shift and go to state 13
+    string          shift and go to state 14
+    [               shift and go to state 4
+    {               shift and go to state 5
+
+    value                          shift and go to state 7
+    elements                       shift and go to state 23
+    array                          shift and go to state 11
+    object                         shift and go to state 12
+
+state 20
+
+    (3) object -> { members } .
+    $end            reduce using rule 3 (object -> { members } .)
+    ,               reduce using rule 3 (object -> { members } .)
+    ]               reduce using rule 3 (object -> { members } .)
+    }               reduce using rule 3 (object -> { members } .)
+
+
+state 21
+
+    (4) members -> pair , . members
+    (4) members -> . pair , members
+    (5) members -> . pair
+    (6) pair -> . string : value
+    string          shift and go to state 17
+
+    pair                           shift and go to state 16
+    members                        shift and go to state 24
+
+state 22
+
+    (6) pair -> string : . value
+    (10) value -> . null
+    (11) value -> . false
+    (12) value -> . true
+    (13) value -> . array
+    (14) value -> . object
+    (15) value -> . number
+    (16) value -> . string
+    (7) array -> . [ elements ]
+    (3) object -> . { members }
+    null            shift and go to state 8
+    false           shift and go to state 9
+    true            shift and go to state 10
+    number          shift and go to state 13
+    string          shift and go to state 14
+    [               shift and go to state 4
+    {               shift and go to state 5
+
+    value                          shift and go to state 25
+    array                          shift and go to state 11
+    object                         shift and go to state 12
+
+state 23
+
+    (8) elements -> value , elements .
+    ]               reduce using rule 8 (elements -> value , elements .)
+
+
+state 24
+
+    (4) members -> pair , members .
+    }               reduce using rule 4 (members -> pair , members .)
+
+
+state 25
+
+    (6) pair -> string : value .
+    ,               reduce using rule 6 (pair -> string : value .)
+    }               reduce using rule 6 (pair -> string : value .)
