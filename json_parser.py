@@ -1,5 +1,4 @@
 from sly import Lexer, Parser
-import pprint
 
 
 class JSONLexer(Lexer):
@@ -7,17 +6,13 @@ class JSONLexer(Lexer):
     literals = {'{', '}', '[', ']', ',', ':'}
     ignore = " \t\n\r"
 
-    @_(r'".*?"')
-    # @_(r'"(((?=\\)\\(["\\/bnrt]|u[0-9a-fA-F]{4}))|[^"\\\0-\x1F\x7F]+)*"')
+    @_(r'"((\n)|.)*?"')
     def string(self, t):
         t.value = t.value.strip("\"")
         return t
 
     @_(r'-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?')
     def number(self, t):
-        # t.value = float(t.value)
-        # if(t.value%1==0):
-        #     t.value = int(t.value)
         return t
     
     @_(r'true')
@@ -35,12 +30,12 @@ class JSONLexer(Lexer):
     def error(self, t):
         print("Illegal character '%s'" % t.value[0])
         self.index += 1
+        raise Exception("Token Error")
 
 
 class JSONParser(Parser):
     tokens = JSONLexer.tokens
     start = "json"
-    debugfile = "a.out"
 
     @_('object',
        'array')
@@ -82,18 +77,25 @@ class JSONParser(Parser):
     def error(self, p):
         if p is None:
             raise ValueError("error at end of token!")
+        if p.value == "}":
+            raise ValueError("empty object")
+        if p.value == "]":
+            raise ValueError("empty array")
 
         raise ValueError("Parsing error at token %s" % str(p))
+
 
 
 if __name__ == "__main__":
     lexer = JSONLexer()
     parser = JSONParser()
 
+
+
     json_text = \
     """{"menu": {
           "id": "file",
-          "value": "File",
+          "value": [1], 
           "popup": {
             "menuitem": [
               {"value": "New", "onclick": "CreateNewDoc()"},
@@ -106,30 +108,10 @@ if __name__ == "__main__":
     }\
         """
 
-    json_exampe_2 = """
-    [
-      {
-        "userId": 1,
-        "id": 1,
-        "title": "sunt aut facere",
-        "body": "quia et suscipit suscipit recusandae"
-      },
-      {
-        "userId": 1,
-        "id": 2,
-        "title": "qui est esse",
-        "body": "est rerum tempore"
-      }
-    ]
-    """
-
     tokenized_json = lexer.tokenize(json_text)
     for i in tokenized_json:
         print(i)
 
-
     result = parser.parse(lexer.tokenize(json_text))
 
-    pprint.pprint(result)
     print(result)
-    # pprint.pprint(parser.parse(lexer.tokenize(json_exampe_2)))
