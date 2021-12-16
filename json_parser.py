@@ -1,8 +1,9 @@
 from sly import Lexer, Parser
+import pprint
 
 
 class JSONLexer(Lexer):
-    tokens = {'{', '}', '[', ']', ',', ':',"number", "string","true","false","null"}
+    tokens = {'{', '}', '[', ']', ',', ':', "number", "string", "true", "false", "null"}
     literals = {'{', '}', '[', ']', ',', ':'}
     ignore = " \t\n\r"
 
@@ -14,23 +15,21 @@ class JSONLexer(Lexer):
     @_(r'-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?')
     def number(self, t):
         return t
-    
+
     @_(r'true')
     def true(self, t):
         return t
-    
+
     @_(r'false')
     def false(self, t):
         return t
-    
+
     @_(r'null')
     def null(self, t):
         return t
 
     def error(self, t):
-        print("Illegal character '%s'" % t.value[0])
         self.index += 1
-        raise Exception("Token Error")
 
 
 class JSONParser(Parser):
@@ -70,7 +69,7 @@ class JSONParser(Parser):
     def elements(self, p):
         return [p.value] + p.elements
 
-    @_('string','number', 'object', 'array', 'true', 'false', 'null')
+    @_('string', 'number', 'object', 'array', 'true', 'false', 'null')
     def value(self, p):
         return p[0]
 
@@ -85,33 +84,64 @@ class JSONParser(Parser):
         raise ValueError("Parsing error at token %s" % str(p))
 
 
-
-if __name__ == "__main__":
+def printParsing(json_text):
     lexer = JSONLexer()
     parser = JSONParser()
+    tokenize_text = lexer.tokenize(json_text)
+    pprint.pprint(parser.parse(tokenize_text))
 
 
-
-    json_text = \
-    """{"menu": {
-          "id": "file",
-          "value": [1], 
-          "popup": {
-            "menuitem": [
-              {"value": "New", "onclick": "CreateNewDoc()"},
-              {"value": "Open", "onclick": "OpenDoc()"},
-              {"value": "Close", "onclick": "CloseDoc()"}
-            ],
-            "delay" : 1.5
-          }
+if __name__ == "__main__":
+    json_text1 = \
+        """
+        {"menu": {
+              "id": "file",
+              "value": [1], 
+              "popup": {
+                "menuitem": [
+                  {"value": "New", "onclick": "CreateNewDoc()"},
+                  {"value": "Open", "onclick": "OpenDoc()"},
+                  {"value": "Close", "onclick": "CloseDoc()"}
+                ],
+                "delay" : 1.5
+              }
+            }
         }
-    }\
         """
 
-    tokenized_json = lexer.tokenize(json_text)
-    for i in tokenized_json:
-        print(i)
+    json_text2 = \
+        """
+        {"menu": {
+              "id": "file",
+              "empty array": [], 
+              "popup": {
+                "menuitem": [
+                  {"value": "New", "onclick": "CreateNewDoc()"},
+                  {"value": "Open", "onclick": "OpenDoc()"},
+                  {"value": "Close", "onclick": "CloseDoc()"}
+                ],
+                "delay" : 1.5
+              }
+            }
+        }
+        """
 
-    result = parser.parse(lexer.tokenize(json_text))
+    json_text3 = \
+        """
+        {
+          "menu": {
+            "id : 240 ,
+            "value" : "hi"
+          }
+        }
+        """
 
-    print(result)
+    json_text4 = \
+        """
+        {
+          "menu": {
+            "id" : 240,
+            "value" : "hi"
+          }
+        """
+    printParsing(json_text4)
