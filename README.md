@@ -18,3 +18,5 @@ LALR(1)
 You can see the CFG and regular expression in `a.txt` and prasing table in `compiler_parsing_table.xlsx`
 
 Execute `json_parser.py` 
+
+### you can put the sample input into the variable `json_text` in `json_parser.py`. 
